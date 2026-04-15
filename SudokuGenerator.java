@@ -1,49 +1,62 @@
 import java.util.ArrayList;
 public class SudokuGenerator extends ConsoleProgram{
     public void run(){
-        int[][] sudoku = new int [9][9];
+        int[][] sudoku = new int[9][9];
         makeBoard(sudoku);
         printBoard(sudoku);
-        
     }
+    
     private void printBoard(int[][] board){
-        for (int row = 0; row < board.length; row++){
+        for (int row = 0; row < board.length; row++) {
             if (row % 3 == 0){
                 System.out.println("+-------+-------+-------+");
             }
-            for (int col = 0; col < board[0].length; col++){
+            for (int col = 0; col < board[0].length; col++) {
                 if (col % 3 == 0){
                     System.out.print("| ");
                 }
                 int value = board[row][col];
                 System.out.print(value + " ");
-                
             }
             System.out.println("|");
         }
         System.out.println("+-------+-------+-------+");
     }
+
     private void makeBoard(int[][] board){
         for (int row = 0; row < board.length; row++){
             ArrayList<Integer> nums = new ArrayList<>();
             for (int i = 1; i <= 9; i++){
                 nums.add(i);
             }
+            randomnessSudukoThing(nums);
+
             for (int col = 0; col < board[0].length; col++){
-              while (nums.size() > 0){
-                  int num = nums.get(0);
-                  if (checkRow(board[row], num) && checkCol(board, col, num) && checkBox(board, row, col, num)){ //tries to put number in a row
-                      board[row][col] = num;
-                      nums.remove(0);
-                      break;
-                  }else{
-                      nums.add(nums.remove(0)); //this checks if the number works, and if it doesnt work, put it at the end of the list and try it later.
-                      
-                  }
-              }
+                int attempts = nums.size(); 
+                while (attempts > 0){
+                    int num = nums.get(0);
+                    if (checkRow(board[row], num) && checkCol(board, col, num) && checkBox(board, row, col, num)){
+                        board[row][col] = num;
+                        nums.remove(0);
+                        break;
+                    } else {
+                        nums.add(nums.remove(0)); //this checks if the number works, and if it doesnt work, put it at the end of the list and try it later.
+                        attempts--;
+                    }
+                }
             }
         }
     }
+
+    private void randomnessSudukoThing(ArrayList<Integer> list){
+        for (int i = list.size() - 1; i > 0; i--){
+            int randIndex = (int)(Math.random()*(i + 1));
+            int temp = list.get(i);
+            list.set(i, list.get(randIndex));
+            list.set(randIndex, temp);
+        }
+    }
+
     private boolean checkRow(int[] nums, int value){
         for (int i = 0; i < nums.length; i++){
             if (nums[i] == value){
@@ -52,7 +65,8 @@ public class SudokuGenerator extends ConsoleProgram{
         }
         return true;
     }
-    private boolean checkCol (int[][] nums, int col, int value){
+
+    private boolean checkCol(int[][] nums, int col, int value){
         for (int i = 0; i < nums.length; i++){
             if (nums[i][col] == value){
                 return false;
@@ -60,15 +74,16 @@ public class SudokuGenerator extends ConsoleProgram{
         }
         return true;
     }
+
     private boolean checkBox(int[][] nums, int row, int col, int value){
         int startRow = row / 3 * 3;
         int startCol = col / 3 * 3;
-        int endRow = row + 3 - (row % 3);
-        int endCol = col + 3 - (col % 3);
-        
+        int endRow = startRow + 3;
+        int endCol = startCol + 3;
+
         for (int i = startRow; i < endRow; i++){
             for (int j = startCol; j < endCol; j++){
-                if(nums[i][j] == value){
+                if (nums[i][j] == value){
                     return false;
                 }
             }
